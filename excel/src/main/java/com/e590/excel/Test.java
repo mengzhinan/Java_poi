@@ -13,6 +13,10 @@ public class Test {
     public static void main(String[] args) {
 
         try {
+
+            ArrayList<String> date = ExcelUtils.readTxt("C:\\Users\\duke\\Desktop\\a.txt");
+
+
             ExcelUtils.writeExcel("C:\\Users\\duke\\Desktop\\target.xls", "文件分析", makeList());
             System.out.println("写入 Excel 文件成功");
         } catch (IOException e) {

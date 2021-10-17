@@ -41,8 +41,11 @@ public class ExcelUtils {
         if (file == null || !file.exists()) {
             return null;
         }
-        // todo
-        return null;
+        String name = file.getName();
+        if (!name.contains(".")) {
+            return null;
+        }
+        return name.substring(name.lastIndexOf(".") + 1);
     }
 
     /**
@@ -128,7 +131,7 @@ public class ExcelUtils {
         }
         boolean isAllow = false;
         for (String allowFileSuffix : ALLOW_FILE_SUFFIX) {
-            if (allowFileSuffix.equals(fileSuffix)) {
+            if (allowFileSuffix.toLowerCase().equals(fileSuffix.toLowerCase())) {
                 isAllow = true;
                 break;
             }
