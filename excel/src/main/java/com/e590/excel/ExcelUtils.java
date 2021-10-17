@@ -138,7 +138,7 @@ public class ExcelUtils {
         }
         boolean isAllow = false;
         for (String allowFileSuffix : ALLOW_FILE_SUFFIX) {
-            if (allowFileSuffix.toLowerCase().equals(fileSuffix.toLowerCase())) {
+            if (allowFileSuffix.equalsIgnoreCase(fileSuffix)) {
                 isAllow = true;
                 break;
             }
