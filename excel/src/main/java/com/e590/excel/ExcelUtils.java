@@ -226,9 +226,7 @@ public class ExcelUtils {
             } else {
                 itemArray = item.split(":");
             }
-            if (itemArray.length != 2
-                    || isEmpty(itemArray[0])
-                    || isEmpty(itemArray[1])) {
+            if (itemArray.length != 2 || isEmpty(itemArray[0])) {
                 continue;
             }
             keyStr.append(",")
