@@ -18,6 +18,12 @@ import java.util.ArrayList;
  */
 public class ExcelUtils {
 
+    // 允许的文件类型
+    private static String[] ALLOW_FILE_SUFFIX = {"txt", "text"};
+    // 是否是相同的表头格式
+    private static String ALLOW_TABLE_HEAD = "记录时间,是否扫描,可用空间,垃圾,微信,QQ,钉钉,企业微信,应用清理,图片清理,视频清理,音频清理,安装包,大文件,重复文件";
+
+
     private static boolean isEmpty(String txt) {
         return txt == null || txt.trim().length() == 0;
     }
@@ -25,8 +31,8 @@ public class ExcelUtils {
     /**
      * 创建文件和目录，最后判断文件是否存在
      *
-     * @param filePath
-     * @return
+     * @param filePath 文件路径 + 文件名
+     * @return 文件是否存在
      */
     private static boolean createFileIfNotExists(String filePath) {
         if (isEmpty(filePath)) {
@@ -47,8 +53,44 @@ public class ExcelUtils {
         return file.exists();
     }
 
-    public static void readTxt(String txtFile) {
+    /**
+     * 读取 txt 文件中的数据
+     *
+     * @param txtFile 文件路径 + 文件名
+     * @return 文件内容集合
+     */
+    public static ArrayList<ArrayList<String>> readTxt(String txtFile) {
+        if (isEmpty(txtFile)) {
+            return null;
+        }
+        File file = new File(txtFile);
+        if (!file.exists()) {
+            return null;
+        }
+        ArrayList<ArrayList<String>> dateSet = new ArrayList<>();
+        ArrayList<ArrayList<String>> tempList = reRead(file);
+        if (tempList != null && tempList.size() > 0) {
+            dateSet.addAll(tempList);
+        }
+        return dateSet;
+    }
 
+    private static ArrayList<ArrayList<String>> reRead(File baseFile) {
+        if (!baseFile.exists()) {
+            return null;
+        }
+        if (baseFile.isFile()) {
+            if ()
+        }
+        if (baseFile.isDirectory()) {
+            File[] list = baseFile.listFiles();
+            if (list == null || list.length == 0) {
+                return null;
+            }
+            for (File file : list) {
+                return reRead(file);
+            }
+        }
     }
 
     /**
@@ -58,7 +100,9 @@ public class ExcelUtils {
      * @param sheetName sheet 表名
      * @param dateSet   二维结构的数据集合
      */
-    public static void writeExcel(String excelFile, String sheetName, ArrayList<ArrayList<String>> dateSet)
+    public static void writeExcel(String excelFile,
+                                  String sheetName,
+                                  ArrayList<ArrayList<String>> dateSet)
             throws IOException, IllegalArgumentException {
         if (isEmpty(sheetName)) {
             sheetName = "sheet1";
@@ -79,12 +123,14 @@ public class ExcelUtils {
             //3.根据sheet创建row
             if (dateSet != null && dateSet.size() > 0) {
                 //循环行
-                for (int line = 0; line < dateSet.size(); line++) {
+                int dateSetSize = dateSet.size();
+                for (int line = 0; line < dateSetSize; line++) {
                     Row row1 = sheet.createRow(line);
                     // 循环列
                     ArrayList<String> columnList = dateSet.get(line);
                     if (columnList != null && columnList.size() > 0) {
-                        for (int cell = 0; cell < columnList.size(); cell++) {
+                        int columnListSize = columnList.size();
+                        for (int cell = 0; cell < columnListSize; cell++) {
                             //4.根据row创建cell
                             Cell cell1 = row1.createCell(cell);
                             //5.向cell里面设置值
