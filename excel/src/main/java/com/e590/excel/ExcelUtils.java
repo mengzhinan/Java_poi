@@ -115,6 +115,7 @@ public class ExcelUtils {
                 return reRead(file);
             }
         }
+        return null;
     }
 
     private static ArrayList<String> readContent(File file) {
