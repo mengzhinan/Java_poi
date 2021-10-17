@@ -26,6 +26,8 @@ public class ExcelUtils {
     // 是否是相同的表头格式
     private static String ALLOW_TABLE_HEAD = "记录时间,是否扫描,可用空间,垃圾,微信,QQ,钉钉,企业微信,应用清理,图片清理,视频清理,音频清理,安装包,大文件,重复文件";
 
+    // 全局保存解析到的数据
+    private static ArrayList<String> dataSet = new ArrayList<String>();
 
     private static boolean isEmpty(String txt) {
         return txt == null || txt.trim().length() == 0;
