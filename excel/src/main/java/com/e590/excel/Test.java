@@ -14,8 +14,8 @@ public class Test {
             }
 
             // todo 测试 path
-//            String basePath = args[0];
-            String basePath = "C:\\Users\\duke\\Desktop\\excel_util";
+            String basePath = args[0];
+//            String basePath = "C:\\Users\\duke\\Desktop\\excel_util";
 
             System.out.println("解析到参数 args[0](basePath) = " + basePath);
 
