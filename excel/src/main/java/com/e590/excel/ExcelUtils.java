@@ -6,9 +6,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
@@ -38,6 +41,8 @@ public class ExcelUtils {
         if (file == null || !file.exists()) {
             return null;
         }
+        // todo
+        return null;
     }
 
     /**
@@ -74,7 +79,7 @@ public class ExcelUtils {
      * @param txtFile 文件路径 + 文件名
      * @return 文件内容集合
      */
-    public static ArrayList<ArrayList<String>> readTxt(String txtFile) {
+    public static ArrayList<String> readTxt(String txtFile) {
         if (isEmpty(txtFile)) {
             return null;
         }
@@ -82,20 +87,24 @@ public class ExcelUtils {
         if (!file.exists()) {
             return null;
         }
-        ArrayList<ArrayList<String>> dateSet = new ArrayList<>();
-        ArrayList<ArrayList<String>> tempList = reRead(file);
+        ArrayList<String> dateSet = new ArrayList<>();
+        ArrayList<String> tempList = reRead(file);
         if (tempList != null && tempList.size() > 0) {
             dateSet.addAll(tempList);
         }
         return dateSet;
     }
 
-    private static ArrayList<ArrayList<String>> reRead(File baseFile) {
+    private static ArrayList<String> reRead(File baseFile) {
         if (baseFile == null || !baseFile.exists()) {
             return null;
         }
         if (baseFile.isFile()) {
-            if ()
+            ArrayList<String> fileContent = readContent(baseFile);
+            if (fileContent == null || fileContent.size() == 0) {
+                return null;
+            }
+            return fileContent;
         }
         if (baseFile.isDirectory()) {
             File[] list = baseFile.listFiles();
@@ -108,6 +117,65 @@ public class ExcelUtils {
         }
     }
 
+    private static ArrayList<String> readContent(File file) {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+        String fileSuffix = getFileSuffixWithoutDot(file);
+        if (isEmpty(fileSuffix)) {
+            return null;
+        }
+        boolean isAllow = false;
+        for (String allowFileSuffix : ALLOW_FILE_SUFFIX) {
+            if (allowFileSuffix.equals(fileSuffix)) {
+                isAllow = true;
+                break;
+            }
+        }
+        if (!isAllow) {
+            return null;
+        }
+        FileInputStream fis = null;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis);
+            br = new BufferedReader(isr);
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                // todo
+            }
+            return list;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (isr != null) {
+                try {
+                    isr.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * 写入 Excel 文件
      *
@@ -117,7 +185,7 @@ public class ExcelUtils {
      */
     public static void writeExcel(String excelFile,
                                   String sheetName,
-                                  ArrayList<ArrayList<String>> dateSet)
+                                  ArrayList<String> dateSet)
             throws IOException, IllegalArgumentException {
         if (isEmpty(sheetName)) {
             sheetName = "sheet1";
@@ -144,16 +212,17 @@ public class ExcelUtils {
             for (int line = 0; line < dateSetSize; line++) {
                 Row row1 = sheet.createRow(line);
                 // 循环列
-                ArrayList<String> columnList = dateSet.get(line);
-                if (columnList == null || columnList.size() == 0) {
+                String columnText = dateSet.get(line);
+                if (isEmpty(columnText)) {
                     continue;
                 }
-                int columnListSize = columnList.size();
+                String[] columnArray = columnText.split(",");
+                int columnListSize = columnArray.length;
                 for (int cell = 0; cell < columnListSize; cell++) {
                     //4.根据row创建cell
                     Cell cell1 = row1.createCell(cell);
                     //5.向cell里面设置值
-                    cell1.setCellValue(columnList.get(cell));
+                    cell1.setCellValue(columnArray[cell]);
                 }
             }
 

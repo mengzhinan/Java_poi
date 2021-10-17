@@ -21,27 +21,12 @@ public class Test {
         }
     }
 
-    private static ArrayList<ArrayList<String>> makeList() {
-        ArrayList<ArrayList<String>> dateSet = new ArrayList<>();
-
-        ArrayList<String> row1 = new ArrayList<>();
-        row1.add("表头1");
-        row1.add("表头2");
-        row1.add("表头3");
-        ArrayList<String> row2 = new ArrayList<>();
-        row2.add("内容1");
-        row2.add("内容2");
-        row2.add("内容3");
-        ArrayList<String> row3 = new ArrayList<>();
-        row3.add("内容11");
-        row3.add("内容22");
-        row3.add("内容33");
-        dateSet.add(row1);
-        dateSet.add(row2);
-        dateSet.add(row3);
-
-
-        return dateSet;
+    private static ArrayList<String> makeList() {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("表头1,表头2,表头3");
+        list.add("内容1,内容2,内容3");
+        list.add("内容11,内容22,内容33");
+        return list;
     }
 
 }
