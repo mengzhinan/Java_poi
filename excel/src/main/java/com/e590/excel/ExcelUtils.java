@@ -250,11 +250,11 @@ public class ExcelUtils {
      *
      * @param excelFile excel 文件路径 + 文件名
      * @param sheetName sheet 表名
-     * @param dateSet   二维结构的数据集合
+     * @param dataSet   二维结构的数据集合
      */
     public static void writeExcel(String excelFile,
                                   String sheetName,
-                                  ArrayList<String> dateSet)
+                                  ArrayList<String> dataSet)
             throws IOException, IllegalArgumentException {
         if (isEmpty(sheetName)) {
             sheetName = "sheet1";
@@ -263,9 +263,10 @@ public class ExcelUtils {
         if (!isXlsFileExists) {
             throw new IllegalArgumentException(excelFile + " not exists Exception.");
         }
-        if (dateSet == null || dateSet.size() == 0) {
+        if (dataSet == null || dataSet.size() == 0) {
             throw new IllegalArgumentException("dateSet is null or empty Exception.");
         }
+        dataSet.add(0, ALLOW_TABLE_HEAD);
         FileOutputStream fos = null;
         Workbook workbook = null;
         try {
@@ -277,11 +278,11 @@ public class ExcelUtils {
 
             //3.根据sheet创建row
             //循环行
-            int dateSetSize = dateSet.size();
+            int dateSetSize = dataSet.size();
             for (int line = 0; line < dateSetSize; line++) {
                 Row row1 = sheet.createRow(line);
                 // 循环列
-                String columnText = dateSet.get(line);
+                String columnText = dataSet.get(line);
                 if (isEmpty(columnText)) {
                     continue;
                 }
