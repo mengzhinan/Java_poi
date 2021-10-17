@@ -22,12 +22,12 @@ import java.util.ArrayList;
 public class ExcelUtils {
 
     // 允许的文件类型
-    private static String[] ALLOW_FILE_SUFFIX = {"txt", "text"};
+    private static final String[] ALLOW_FILE_SUFFIX = {"txt", "text"};
     // 是否是相同的表头格式
-    private static String ALLOW_TABLE_HEAD = "记录时间,是否扫描,可用空间,垃圾,微信,QQ,钉钉,企业微信,应用清理,图片清理,视频清理,音频清理,安装包,大文件,重复文件";
+    private static final String ALLOW_TABLE_HEAD = "记录时间,是否扫描,可用空间,垃圾,微信,QQ,钉钉,企业微信,应用清理,图片清理,视频清理,音频清理,安装包,大文件,重复文件";
 
     // 全局保存解析到的数据
-    private static ArrayList<String> dataSet = new ArrayList<String>();
+    private static final ArrayList<String> DATA_SET = new ArrayList<>();
 
     private static boolean isEmpty(String txt) {
         return txt == null || txt.trim().length() == 0;
@@ -84,20 +84,15 @@ public class ExcelUtils {
      * @param txtFile 文件路径 + 文件名
      * @return 文件内容集合
      */
-    public static ArrayList<String> readTxt(String txtFile) {
+    private static void readTxt(String txtFile) {
         if (isEmpty(txtFile)) {
-            return null;
+            return;
         }
         File file = new File(txtFile);
         if (!file.exists()) {
-            return null;
+            return;
         }
-        ArrayList<String> dateSet = new ArrayList<>();
-        ArrayList<String> tempList = reRead(file);
-        if (tempList != null && tempList.size() > 0) {
-            dateSet.addAll(tempList);
-        }
-        return dateSet;
+        reRead(file);
     }
 
     /**
@@ -151,7 +146,6 @@ public class ExcelUtils {
         FileInputStream fis = null;
         InputStreamReader isr = null;
         BufferedReader br = null;
-        ArrayList<String> list = new ArrayList<>();
         try {
             fis = new FileInputStream(file);
             isr = new InputStreamReader(fis);
@@ -160,10 +154,9 @@ public class ExcelUtils {
             while ((line = br.readLine()) != null) {
                 line = convertLine(line);
                 if (!isEmpty(line)) {
-                    list.add(line);
+                    DATA_SET.add(line);
                 }
             }
-            return list;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -254,9 +247,9 @@ public class ExcelUtils {
      * @param sheetName sheet 表名
      * @param dataSet   二维结构的数据集合
      */
-    public static void writeExcel(String excelFile,
-                                  String sheetName,
-                                  ArrayList<String> dataSet)
+    private static void writeExcel(String excelFile,
+                                   String sheetName,
+                                   ArrayList<String> dataSet)
             throws IOException, IllegalArgumentException {
         if (isEmpty(sheetName)) {
             sheetName = "sheet1";
@@ -328,6 +321,27 @@ public class ExcelUtils {
                 }
             }
         }
+    }
+
+    public static void analyseTxt(String basePath, String sheetName) throws IOException {
+        DATA_SET.clear();
+
+        readTxt(basePath);
+
+        if (DATA_SET.size() == 0) {
+            throw new IllegalArgumentException("data is null or empty, please check origin data file format.");
+        }
+
+        String xlsPath = basePath;
+        File file = new File(basePath);
+        if (file.isFile()) {
+            // 获取父目录路径
+            xlsPath = file.getParentFile().getAbsolutePath();
+        }
+        xlsPath += File.separator + "analyse.xls";
+
+        writeExcel(xlsPath, sheetName, DATA_SET);
+
     }
 
 }
