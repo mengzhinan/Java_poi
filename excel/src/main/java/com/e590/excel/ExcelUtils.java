@@ -208,11 +208,24 @@ public class ExcelUtils {
         }
         StringBuilder keyStr = new StringBuilder();
         StringBuilder valueStr = new StringBuilder();
+        int index = 0;
         for (String item : array) {
+            index++;
             if (isEmpty(item)) {
                 continue;
             }
-            String[] itemArray = item.split(":");
+            String[] itemArray = new String[2];
+            if (index == 1) {
+                // yyyy-MM-dd HH:mm:ss:SSS 时间格式特殊
+                int indexFirstColon = item.indexOf(":");
+                if (indexFirstColon == -1) {
+                    continue;
+                }
+                itemArray[0] = item.substring(0, indexFirstColon);
+                itemArray[1] = item.substring(indexFirstColon + 1);
+            } else {
+                itemArray = item.split(":");
+            }
             if (itemArray.length != 2
                     || isEmpty(itemArray[0])
                     || isEmpty(itemArray[1])) {
