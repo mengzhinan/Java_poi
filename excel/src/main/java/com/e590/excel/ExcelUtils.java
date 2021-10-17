@@ -29,6 +29,18 @@ public class ExcelUtils {
     }
 
     /**
+     * 获取文件的扩展名
+     *
+     * @param file 文件对象
+     * @return 扩展名 (没有点)
+     */
+    private static String getFileSuffixWithoutDot(File file) {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+    }
+
+    /**
      * 创建文件和目录，最后判断文件是否存在
      *
      * @param filePath 文件路径 + 文件名
@@ -40,6 +52,9 @@ public class ExcelUtils {
         }
         File file = new File(filePath);
         File parent = file.getParentFile();
+        if (parent == null) {
+            return false;
+        }
         if (!parent.exists()) {
             parent.mkdirs();
         }
@@ -76,7 +91,7 @@ public class ExcelUtils {
     }
 
     private static ArrayList<ArrayList<String>> reRead(File baseFile) {
-        if (!baseFile.exists()) {
+        if (baseFile == null || !baseFile.exists()) {
             return null;
         }
         if (baseFile.isFile()) {
@@ -111,6 +126,9 @@ public class ExcelUtils {
         if (!isXlsFileExists) {
             throw new IllegalArgumentException(excelFile + " not exists Exception.");
         }
+        if (dateSet == null || dateSet.size() == 0) {
+            throw new IllegalArgumentException("dateSet is null or empty Exception.");
+        }
         FileOutputStream fos = null;
         Workbook workbook = null;
         try {
@@ -121,24 +139,24 @@ public class ExcelUtils {
             Sheet sheet = workbook.createSheet(sheetName);
 
             //3.根据sheet创建row
-            if (dateSet != null && dateSet.size() > 0) {
-                //循环行
-                int dateSetSize = dateSet.size();
-                for (int line = 0; line < dateSetSize; line++) {
-                    Row row1 = sheet.createRow(line);
-                    // 循环列
-                    ArrayList<String> columnList = dateSet.get(line);
-                    if (columnList != null && columnList.size() > 0) {
-                        int columnListSize = columnList.size();
-                        for (int cell = 0; cell < columnListSize; cell++) {
-                            //4.根据row创建cell
-                            Cell cell1 = row1.createCell(cell);
-                            //5.向cell里面设置值
-                            cell1.setCellValue(columnList.get(cell));
-                        }
-                    }
+            //循环行
+            int dateSetSize = dateSet.size();
+            for (int line = 0; line < dateSetSize; line++) {
+                Row row1 = sheet.createRow(line);
+                // 循环列
+                ArrayList<String> columnList = dateSet.get(line);
+                if (columnList == null || columnList.size() == 0) {
+                    continue;
+                }
+                int columnListSize = columnList.size();
+                for (int cell = 0; cell < columnListSize; cell++) {
+                    //4.根据row创建cell
+                    Cell cell1 = row1.createCell(cell);
+                    //5.向cell里面设置值
+                    cell1.setCellValue(columnList.get(cell));
                 }
             }
+
             //6.通过输出流写到文件里去
             workbook.write(fos);
         } catch (IOException e) {
