@@ -19,7 +19,7 @@ public class Test {
             System.out.println("写入 Excel 文件成功");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("写入 Excel 文件失败");
+            System.out.println("写入 Excel 文件失败, error = " + e.getMessage());
         }
     }
 
