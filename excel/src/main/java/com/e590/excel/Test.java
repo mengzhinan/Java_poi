@@ -13,7 +13,10 @@ public class Test {
                 System.out.println("请输入待解析 txt 文件的根目录");
             }
 
-            String basePath = args[0];
+            // todo 测试 path
+//            String basePath = args[0];
+            String basePath = "C:\\Users\\duke\\Desktop\\excel_util";
+
             System.out.println("解析到参数 args[0](basePath) = " + basePath);
 
             ExcelUtils.analyseTxt(basePath, "txt 数据统计");

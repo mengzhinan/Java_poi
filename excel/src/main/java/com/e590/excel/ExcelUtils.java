@@ -88,11 +88,7 @@ public class ExcelUtils {
         if (isEmpty(txtFile)) {
             return;
         }
-        File file = new File(txtFile);
-        if (!file.exists()) {
-            return;
-        }
-        reRead(file);
+        reRead(new File(txtFile));
     }
 
     /**
@@ -101,37 +97,32 @@ public class ExcelUtils {
      * @param baseFile 文件路径 + 文件名
      * @return 内容
      */
-    private static ArrayList<String> reRead(File baseFile) {
+    private static void reRead(File baseFile) {
         if (baseFile == null || !baseFile.exists()) {
-            return null;
+            return;
         }
         if (baseFile.isFile()) {
-            ArrayList<String> fileContent = readContent(baseFile);
-            if (fileContent == null || fileContent.size() == 0) {
-                return null;
-            }
-            return fileContent;
+            readContent(baseFile);
         }
         if (baseFile.isDirectory()) {
             File[] list = baseFile.listFiles();
             if (list == null || list.length == 0) {
-                return null;
+                return;
             }
             for (File file : list) {
-                return reRead(file);
+                reRead(file);
             }
         }
-        return null;
     }
 
-    private static ArrayList<String> readContent(File file) {
-        if (file == null || !file.exists() || !file.canRead()) {
-            return null;
+    private static void readContent(File file) {
+        if (file == null || !file.exists()) {
+            return;
         }
         // 获取文件后缀名
         String fileSuffix = getFileSuffixWithoutDot(file);
         if (isEmpty(fileSuffix)) {
-            return null;
+            return;
         }
         boolean isAllow = false;
         for (String allowFileSuffix : ALLOW_FILE_SUFFIX) {
@@ -141,7 +132,7 @@ public class ExcelUtils {
             }
         }
         if (!isAllow) {
-            return null;
+            return;
         }
         FileInputStream fis = null;
         InputStreamReader isr = null;
@@ -182,7 +173,6 @@ public class ExcelUtils {
                 }
             }
         }
-        return null;
     }
 
     /**
