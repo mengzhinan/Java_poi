@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * date_time: 2021-10-17 17:31:22
  * description:
  */
-public class POIUtils {
+public class ExcelUtils {
 
     private static boolean isEmpty(String txt) {
         return txt == null || txt.trim().length() == 0;

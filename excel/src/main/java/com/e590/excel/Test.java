@@ -1,5 +1,6 @@
 package com.e590.excel;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -11,8 +12,13 @@ public class Test {
 
     public static void main(String[] args) {
 
-        POIUtils.writeExcel("C:\\Users\\duke\\Desktop\\target.xls", null, makeList());
-        System.out.println("写入 Excel 文件完成");
+        try {
+            ExcelUtils.writeExcel("C:\\Users\\duke\\Desktop\\target.xls", "文件分析", makeList());
+            System.out.println("写入 Excel 文件成功");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("写入 Excel 文件失败");
+        }
     }
 
     private static ArrayList<ArrayList<String>> makeList() {
