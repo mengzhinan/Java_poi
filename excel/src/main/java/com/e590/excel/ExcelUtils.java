@@ -98,6 +98,12 @@ public class ExcelUtils {
         return dateSet;
     }
 
+    /**
+     * 递归读取文件
+     *
+     * @param baseFile 文件路径 + 文件名
+     * @return 内容
+     */
     private static ArrayList<String> reRead(File baseFile) {
         if (baseFile == null || !baseFile.exists()) {
             return null;
@@ -122,9 +128,10 @@ public class ExcelUtils {
     }
 
     private static ArrayList<String> readContent(File file) {
-        if (file == null || !file.exists()) {
+        if (file == null || !file.exists() || !file.canRead()) {
             return null;
         }
+        // 获取文件后缀名
         String fileSuffix = getFileSuffixWithoutDot(file);
         if (isEmpty(fileSuffix)) {
             return null;
@@ -149,7 +156,10 @@ public class ExcelUtils {
             br = new BufferedReader(isr);
             String line = null;
             while ((line = br.readLine()) != null) {
-                // todo
+                line = convertLine(line);
+                if (!isEmpty(line)) {
+                    list.add(line);
+                }
             }
             return list;
         } catch (IOException e) {
@@ -178,6 +188,50 @@ public class ExcelUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * 转换每一行数据
+     *
+     * @param line 行内容
+     * @return 转换后的内容
+     */
+    private static String convertLine(String line) {
+        line = line.replaceAll("：", ":")
+                .replaceAll("，", ",")
+                .replaceAll("\n", "")
+                .replaceAll("\t", "")
+                .trim();
+        String[] array = line.split(",");
+        if (array.length != ALLOW_TABLE_HEAD.split(",").length) {
+            return null;
+        }
+        StringBuilder keyStr = new StringBuilder();
+        StringBuilder valueStr = new StringBuilder();
+        for (String item : array) {
+            if (isEmpty(item)) {
+                continue;
+            }
+            String[] itemArray = item.split(":");
+            if (itemArray.length != 2
+                    || isEmpty(itemArray[0])
+                    || isEmpty(itemArray[1])) {
+                continue;
+            }
+            keyStr.append(",")
+                    .append(itemArray[0].trim());
+            valueStr.append(",")
+                    .append(itemArray[1].trim());
+        }
+        String keyResult = keyStr.substring(1);
+        String valueResult = valueStr.substring(1);
+        if (isEmpty(keyResult) || isEmpty(valueResult)) {
+            return null;
+        }
+        if (!keyResult.equals(ALLOW_TABLE_HEAD)) {
+            return null;
+        }
+        return valueResult;
     }
 
     /**
@@ -222,11 +276,15 @@ public class ExcelUtils {
                 }
                 String[] columnArray = columnText.split(",");
                 int columnListSize = columnArray.length;
-                for (int cell = 0; cell < columnListSize; cell++) {
+                for (int cellIndex = 0; cellIndex < columnListSize; cellIndex++) {
                     //4.根据row创建cell
-                    Cell cell1 = row1.createCell(cell);
+                    Cell cell = row1.createCell(cellIndex);
                     //5.向cell里面设置值
-                    cell1.setCellValue(columnArray[cell]);
+                    String cellText = columnArray[cellIndex];
+                    if (isEmpty(cellText)) {
+                        cellText = "";
+                    }
+                    cell.setCellValue(cellText);
                 }
             }
 
