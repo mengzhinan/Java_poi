@@ -1,6 +1,6 @@
 package com.e590.excel.file.txt;
 
-import com.e590.excel.file.CloseIOUtils;
+import com.e590.excel.file.FileUtils;
 import com.e590.excel.utils.CommonUtils;
 import com.e590.excel.utils.ParseDataUtils;
 
@@ -177,9 +177,9 @@ public class TxtUtils {
             e.printStackTrace();
             throw new IOException(e);
         } finally {
-            CloseIOUtils.closeIO(br);
-            CloseIOUtils.closeIO(isr);
-            CloseIOUtils.closeIO(fis);
+            FileUtils.closeIO(br);
+            FileUtils.closeIO(isr);
+            FileUtils.closeIO(fis);
         }
     }
 
@@ -215,9 +215,9 @@ public class TxtUtils {
             e.printStackTrace();
             throw new IOException(e);
         } finally {
-            CloseIOUtils.closeIO(bw);
-            CloseIOUtils.closeIO(osw);
-            CloseIOUtils.closeIO(fos);
+            FileUtils.closeIO(bw);
+            FileUtils.closeIO(osw);
+            FileUtils.closeIO(fos);
         }
 
     }

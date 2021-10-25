@@ -1,7 +1,7 @@
 package com.e590.excel.file.xls;
 
 import com.e590.excel.file.txt.TxtUtils;
-import com.e590.excel.file.CloseIOUtils;
+import com.e590.excel.file.FileUtils;
 import com.e590.excel.utils.CommonUtils;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -82,8 +82,8 @@ public class ExcelUtils {
             e.printStackTrace();
             throw new IOException(e);
         } finally {
-            CloseIOUtils.closeIO(workbook);
-            CloseIOUtils.closeIO(fos);
+            FileUtils.closeIO(workbook);
+            FileUtils.closeIO(fos);
         }
     }
 

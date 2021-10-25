@@ -14,7 +14,7 @@ import java.io.Writer;
  * dateTime: 2021-10-22 09:06:40
  * description: 功能描述：
  */
-public class CloseIOUtils {
+public class FileUtils {
 
     public static void closeIO(Reader reader) {
         if (reader == null) {
