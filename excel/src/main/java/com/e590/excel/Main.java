@@ -29,6 +29,14 @@ public class Main {
             int argsSize = Math.min(args.length, paramArray.length);
             for (int i = 0; i < argsSize; i++) {
                 paramArray[i] = args[i];
+                if (paramArray[i] == null) {
+                    paramArray[i] = "";
+                }
+                paramArray[i] = paramArray[i].replaceAll("“", "")
+                        .replaceAll("’", "")
+                        .replaceAll("\"", "")
+                        .replaceAll("'", "")
+                        .trim();
                 System.out.println("Parsed args[" + i + "] = " + args[i]);
             }
 
