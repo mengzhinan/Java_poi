@@ -82,8 +82,8 @@ public class FileUtils {
      *
      * @param file 文件路径 + 文件名
      */
-    private static void recursiveCallReadFile(File file,
-                                              OnReadFileCallback onReadFileCallback) {
+    public static void recursiveCallReadFile(File file,
+                                             OnReadFileCallback onReadFileCallback) {
         if (isNullOrNotExists(file) || onReadFileCallback == null) {
             return;
         }

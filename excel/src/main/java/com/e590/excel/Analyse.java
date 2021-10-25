@@ -4,7 +4,6 @@ import com.e590.excel.file.FileUtils;
 import com.e590.excel.file.txt.TxtUtils;
 import com.e590.excel.file.xls.ExcelUtils;
 import com.e590.excel.utils.CommonUtils;
-import com.e590.excel.utils.ParseDataUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +53,6 @@ public class Analyse {
      * @param dataList           数据集合
      * @param allowFileSuffixStr 允许读取的文件类型扩展名
      * @param allowTableHeadStr  允许的数据列表 head 格式
-     * @return 文件内容集合
      */
     private static void readFile(String txtFile,
                                  ArrayList<String> dataList,
@@ -63,40 +61,95 @@ public class Analyse {
         if (CommonUtils.isNullOrEmpty(txtFile)) {
             return;
         }
-        reRead(new File(txtFile), dataList, allowFileSuffixStr, allowTableHeadStr);
 
-        // 获取文件后缀名
-        String fileSuffix = FileUtils.getFileSuffixWithoutDot(baseFile);
-        if (CommonUtils.isNullOrEmpty(fileSuffix)) {
-            return;
-        }
-        boolean isAllow = false;
-        String[] allowSuffixArr = allowFileSuffixStr.split(",");
-        for (String allowFileSuffix : allowSuffixArr) {
-            if (allowFileSuffix.equalsIgnoreCase(fileSuffix)) {
-                isAllow = true;
-                break;
+        FileUtils.recursiveCallReadFile(new File(txtFile), file -> {
+            // 获取文件后缀名
+            String fileSuffix = FileUtils.getFileSuffixWithoutDot(file);
+            if (CommonUtils.isNullOrEmpty(fileSuffix)) {
+                return;
             }
+            boolean isAllow = false;
+            String[] allowSuffixArr = allowFileSuffixStr.split(",");
+            for (String allowFileSuffix : allowSuffixArr) {
+                if (allowFileSuffix.equalsIgnoreCase(fileSuffix)) {
+                    isAllow = true;
+                    break;
+                }
+            }
+            if (!isAllow) {
+                return;
+            }
+            ArrayList<String> tempList = null;
+            try {
+                tempList = TxtUtils.readText(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (CommonUtils.isNullOrEmpty(tempList)) {
+                return;
+            }
+            for (int i = 0; i < tempList.size(); i++) {
+                String line = convertLine(tempList.get(i), allowTableHeadStr);
+                if (CommonUtils.isNullOrEmpty(line)) {
+                    continue;
+                }
+                dataList.add(line);
+            }
+        });
+
+    }
+
+    /**
+     * 转换每一行数据
+     *
+     * @param line 行内容
+     * @return 转换后的内容
+     */
+    private static String convertLine(String line, String allowTableHeadStr) {
+        if (CommonUtils.isNullOrEmpty(line) || CommonUtils.isNullOrEmpty(allowTableHeadStr)) {
+            return null;
         }
-        if (!isAllow) {
-            return;
+        line = line.replaceAll("：", ":")
+                .replaceAll("，", ",")
+                .replaceAll("\n", "")
+                .replaceAll("\t", "")
+                .trim();
+        String split1 = ",";
+        String split2 = ":";
+        String[] array = line.split(split1);
+        if (array.length != allowTableHeadStr.split(split1).length) {
+            return null;
         }
-        ArrayList<String> tempList = null;
-        try {
-            tempList = readText(baseFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (tempList == null || tempList.size() == 0) {
-            return;
-        }
-        for (int i = 0; i < tempList.size(); i++) {
-            String line = ParseDataUtils.convertLine(tempList.get(i), allowTableHeadStr);
-            if (CommonUtils.isNullOrEmpty(line)) {
+        StringBuilder keyStr = new StringBuilder();
+        StringBuilder valueStr = new StringBuilder();
+        for (String item : array) {
+            if (CommonUtils.isNullOrEmpty(item)) {
                 continue;
             }
-            dataList.add(line);
+            String[] itemArray = new String[2];
+            // yyyy-MM-dd HH:mm:ss:SSS 时间格式特殊
+            int indexFirstColon = item.indexOf(split2);
+            if (indexFirstColon == -1) {
+                itemArray[0] = item;
+                itemArray[1] = "";
+            } else {
+                itemArray[0] = item.substring(0, indexFirstColon);
+                itemArray[1] = item.substring(indexFirstColon + 1);
+            }
+            keyStr.append(",")
+                    .append(itemArray[0].trim());
+            valueStr.append(",")
+                    .append(itemArray[1].trim());
         }
+        String keyResult = keyStr.substring(1);
+        String valueResult = valueStr.substring(1);
+        if (CommonUtils.isNullOrEmpty(keyResult) || CommonUtils.isNullOrEmpty(valueResult)) {
+            return null;
+        }
+        if (!keyResult.equals(allowTableHeadStr)) {
+            return null;
+        }
+        return valueResult;
     }
 
 }
