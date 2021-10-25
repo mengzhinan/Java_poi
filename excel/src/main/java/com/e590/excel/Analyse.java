@@ -16,6 +16,8 @@ import java.util.ArrayList;
  */
 public class Analyse {
 
+    private static final String RESULT_FILE_NAME = "AnalyseResult";
+
     public static void analyseTxt(String[] paramArray)
             throws IllegalArgumentException, IOException {
 
@@ -36,7 +38,7 @@ public class Analyse {
             filePath = file.getParentFile().getAbsolutePath();
         }
         // 在当前目录下，生成目标后缀的 analyse 名称文件
-        filePath += File.separator + "AnalyseResult." + paramArray[1];
+        filePath += File.separator + RESULT_FILE_NAME + "." + paramArray[1];
 
         if ("txt".equalsIgnoreCase(paramArray[1])
                 || "text".equalsIgnoreCase(paramArray[1])) {
@@ -63,8 +65,19 @@ public class Analyse {
         }
 
         FileUtils.recursiveCallReadFile(new File(txtFile), file -> {
+            if (FileUtils.isNullOrNotExists(file)) {
+                return;
+            }
             // 获取文件后缀名
             String fileSuffix = FileUtils.getFileSuffixWithoutDot(file);
+            // 获取文件名
+            String fileName = file.getName();
+
+            if (CommonUtils.isNullOrEmpty(fileName)
+                    || (RESULT_FILE_NAME + "." + fileSuffix).equalsIgnoreCase(fileName)) {
+                // 不要对刚才生成的 txt 文件二次读取分析
+                return;
+            }
             if (CommonUtils.isNullOrEmpty(fileSuffix)) {
                 return;
             }
