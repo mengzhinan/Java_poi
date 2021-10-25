@@ -16,7 +16,7 @@ public class Main {
 
             // 1、生成的文件保存的路径。
             // 2、生成的文件扩展名。Example: xls or csv
-            // 3、允许的文件类型。Example："txt,text"
+            // 3、允许读取的文件类型。Example："txt,text"
             // 4、是否是相同的表头格式。
             // Example: "记录时间,是否扫描,可用空间,垃圾,微信,QQ,钉钉,企业微信,应用清理,图片清理,视频清理,音频清理,安装包,大文件,重复文件";
             String[] paramArray = {
