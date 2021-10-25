@@ -1,5 +1,8 @@
 package com.e590.excel;
 
+import com.e590.excel.file.txt.FileUtils;
+import com.e590.excel.file.xls.ExcelUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
