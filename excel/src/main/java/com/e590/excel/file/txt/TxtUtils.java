@@ -39,7 +39,7 @@ public class TxtUtils {
             fis = new FileInputStream(file);
             isr = new InputStreamReader(fis);
             br = new BufferedReader(isr);
-            String line = null;
+            String line;
             // != null，表示未读到文件末尾
             while ((line = br.readLine()) != null) {
                 if (CommonUtils.isNullOrEmpty(line)) {

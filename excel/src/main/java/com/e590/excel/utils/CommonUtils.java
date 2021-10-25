@@ -18,10 +18,6 @@ public class CommonUtils {
         return list == null || list.size() == 0;
     }
 
-    public static boolean isNullOrEmpty(String[] arr) {
-        return arr == null || arr.length == 0;
-    }
-
     public static boolean isNullOrEmpty(File[] arr) {
         return arr == null || arr.length == 0;
     }
