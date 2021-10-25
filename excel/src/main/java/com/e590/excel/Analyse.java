@@ -1,6 +1,7 @@
 package com.e590.excel;
 
 import com.e590.excel.file.FileUtils;
+import com.e590.excel.file.txt.TxtUtils;
 import com.e590.excel.file.xls.ExcelUtils;
 import com.e590.excel.utils.CommonUtils;
 import com.e590.excel.utils.ParseDataUtils;
@@ -18,6 +19,7 @@ public class Analyse {
 
     public static void analyseTxt(String[] paramArray)
             throws IllegalArgumentException, IOException {
+
         final ArrayList<String> dataList = new ArrayList<>();
         readFile(paramArray[0], dataList, paramArray[2], paramArray[3]);
 
@@ -25,6 +27,7 @@ public class Analyse {
             throw new IllegalArgumentException("data is null or empty, please check origin data file format.");
         }
 
+        // 在数据集合中，添加表头行
         dataList.add(0, paramArray[3]);
 
         String filePath = paramArray[0];
@@ -33,11 +36,15 @@ public class Analyse {
             // 获取父目录路径
             filePath = file.getParentFile().getAbsolutePath();
         }
-        filePath += File.separator + "analyse." + paramArray[1];
+        // 在当前目录下，生成目标后缀的 analyse 名称文件
+        filePath += File.separator + "AnalyseResult." + paramArray[1];
 
-
-        ExcelUtils.writeExcel(filePath, " Txt 数据分析", dataList);
-
+        if ("txt".equalsIgnoreCase(paramArray[1])
+                || "text".equalsIgnoreCase(paramArray[1])) {
+            TxtUtils.writeText(filePath, dataList);
+        } else {
+            ExcelUtils.writeExcel(filePath, " Txt 数据分析", dataList);
+        }
     }
 
     /**
@@ -52,7 +59,7 @@ public class Analyse {
     private static void readFile(String txtFile,
                                  ArrayList<String> dataList,
                                  String allowFileSuffixStr,
-                                 String allowTableHeadStr){
+                                 String allowTableHeadStr) {
         if (CommonUtils.isNullOrEmpty(txtFile)) {
             return;
         }
