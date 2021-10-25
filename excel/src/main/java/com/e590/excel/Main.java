@@ -1,6 +1,6 @@
 package com.e590.excel;
 
-import com.e590.excel.file.txt.FileUtils;
+import com.e590.excel.file.txt.TxtUtils;
 import com.e590.excel.file.xls.ExcelUtils;
 
 import java.io.File;
@@ -51,7 +51,7 @@ public class Main {
     private static void analyseTxt(String[] paramArray)
             throws IllegalArgumentException, IOException {
         final ArrayList<String> dataList = new ArrayList<>();
-        FileUtils.readTxt(paramArray[0], dataList, paramArray[2], paramArray[3]);
+        TxtUtils.readTxt(paramArray[0], dataList, paramArray[2], paramArray[3]);
 
         if (dataList.size() == 0) {
             throw new IllegalArgumentException("data is null or empty, please check origin data file format.");

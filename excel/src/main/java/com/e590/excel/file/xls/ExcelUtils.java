@@ -1,6 +1,6 @@
 package com.e590.excel.file.xls;
 
-import com.e590.excel.file.txt.FileUtils;
+import com.e590.excel.file.txt.TxtUtils;
 import com.e590.excel.file.CloseIOUtils;
 import com.e590.excel.utils.CommonUtils;
 
@@ -32,7 +32,7 @@ public class ExcelUtils {
                                   String sheetName,
                                   ArrayList<String> dataSet)
             throws IOException, IllegalArgumentException {
-        boolean isXlsFileExists = FileUtils.createFileIfNotExists(excelFile);
+        boolean isXlsFileExists = TxtUtils.createFileIfNotExists(excelFile);
         if (!isXlsFileExists) {
             throw new IllegalArgumentException("writeExcel(): " + excelFile + " not exists Exception.");
         }

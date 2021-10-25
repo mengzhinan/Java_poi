@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * date_time: 2021-10-20 23:12:12
  * description:
  */
-public class FileUtils {
+public class TxtUtils {
 
     /**
      * 获取文件的扩展名
