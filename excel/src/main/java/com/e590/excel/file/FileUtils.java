@@ -112,7 +112,7 @@ public class FileUtils {
         try {
             reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -123,12 +123,12 @@ public class FileUtils {
         try {
             writer.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         try {
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -139,12 +139,12 @@ public class FileUtils {
         try {
             oStream.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         try {
             oStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -155,7 +155,7 @@ public class FileUtils {
         try {
             iStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -166,7 +166,7 @@ public class FileUtils {
         try {
             bk.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
