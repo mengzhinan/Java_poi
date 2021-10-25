@@ -1,6 +1,5 @@
 package com.e590.excel.file.xls;
 
-import com.e590.excel.file.txt.TxtUtils;
 import com.e590.excel.file.FileUtils;
 import com.e590.excel.utils.CommonUtils;
 
@@ -32,14 +31,14 @@ public class ExcelUtils {
                                   String sheetName,
                                   ArrayList<String> dataSet)
             throws IOException, IllegalArgumentException {
-        boolean isXlsFileExists = TxtUtils.createFileIfNotExists(excelFile);
+        boolean isXlsFileExists = FileUtils.createFileIfNotExists(excelFile);
         if (!isXlsFileExists) {
             throw new IllegalArgumentException("writeExcel(): " + excelFile + " not exists Exception.");
         }
         if (dataSet == null || dataSet.size() == 0) {
             throw new IllegalArgumentException("writeExcel(): dateSet is null or empty Exception.");
         }
-        if (CommonUtils.isEmpty(sheetName)) {
+        if (CommonUtils.isNullOrEmpty(sheetName)) {
             sheetName = "sheet1";
         }
         FileOutputStream fos = null;
@@ -58,7 +57,7 @@ public class ExcelUtils {
                 // 循环列
                 Row row = sheet.createRow(lineIndex);
                 String columnText = dataSet.get(lineIndex);
-                if (CommonUtils.isEmpty(columnText)) {
+                if (CommonUtils.isNullOrEmpty(columnText)) {
                     columnText = "";
                 }
                 String[] columnArray = columnText.split(",");
@@ -68,7 +67,7 @@ public class ExcelUtils {
                     Cell cell = row.createCell(cellIndex);
                     // 5.向cell里面设置值
                     String cellText = columnArray[cellIndex];
-                    if (CommonUtils.isEmpty(cellText)) {
+                    if (CommonUtils.isNullOrEmpty(cellText)) {
                         cellText = "";
                     }
                     cell.setCellValue(cellText);

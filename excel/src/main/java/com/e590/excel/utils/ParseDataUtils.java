@@ -14,7 +14,7 @@ public class ParseDataUtils {
      * @return 转换后的内容
      */
     public static String convertLine(String line, String allowTableHeadStr) {
-        if (CommonUtils.isEmpty(line)) {
+        if (CommonUtils.isNullOrEmpty(line) || CommonUtils.isNullOrEmpty(allowTableHeadStr)) {
             return null;
         }
         line = line.replaceAll("：", ":")
@@ -31,7 +31,7 @@ public class ParseDataUtils {
         StringBuilder keyStr = new StringBuilder();
         StringBuilder valueStr = new StringBuilder();
         for (String item : array) {
-            if (CommonUtils.isEmpty(item)) {
+            if (CommonUtils.isNullOrEmpty(item)) {
                 continue;
             }
             String[] itemArray = new String[2];
@@ -51,7 +51,7 @@ public class ParseDataUtils {
         }
         String keyResult = keyStr.substring(1);
         String valueResult = valueStr.substring(1);
-        if (CommonUtils.isEmpty(keyResult) || CommonUtils.isEmpty(valueResult)) {
+        if (CommonUtils.isNullOrEmpty(keyResult) || CommonUtils.isNullOrEmpty(valueResult)) {
             return null;
         }
         if (!keyResult.equals(allowTableHeadStr)) {

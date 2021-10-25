@@ -1,12 +1,5 @@
 package com.e590.excel;
 
-import com.e590.excel.file.txt.TxtUtils;
-import com.e590.excel.file.xls.ExcelUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 /**
  * author: duke
  * date_time: 2021-10-17 17:41:53
@@ -36,40 +29,17 @@ public class Main {
             int argsSize = Math.min(args.length, paramArray.length);
             for (int i = 0; i < argsSize; i++) {
                 paramArray[i] = args[i];
-                System.out.println("Parsed args[i] = " + args[i]);
+                System.out.println("Parsed args[" + i + "] = " + args[i]);
             }
 
-            analyseTxt(paramArray);
+            //读取、分析、生成文件
+            Analyse.analyseTxt(paramArray);
 
             System.out.println("统计数据写入文件成功!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("统计数据写入文件失败. error = " + e.getMessage());
         }
-    }
-
-    private static void analyseTxt(String[] paramArray)
-            throws IllegalArgumentException, IOException {
-        final ArrayList<String> dataList = new ArrayList<>();
-        TxtUtils.readTxt(paramArray[0], dataList, paramArray[2], paramArray[3]);
-
-        if (dataList.size() == 0) {
-            throw new IllegalArgumentException("data is null or empty, please check origin data file format.");
-        }
-
-        dataList.add(0, paramArray[3]);
-
-        String filePath = paramArray[0];
-        File file = new File(filePath);
-        if (file.isFile()) {
-            // 获取父目录路径
-            filePath = file.getParentFile().getAbsolutePath();
-        }
-        filePath += File.separator + "analyse." + paramArray[1];
-
-
-        ExcelUtils.writeExcel(filePath, " Txt 数据分析", dataList);
-
     }
 
 }
