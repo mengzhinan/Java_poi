@@ -14,37 +14,35 @@ public class ParseDataUtils {
      * @return 转换后的内容
      */
     public static String convertLine(String line, String allowTableHeadStr) {
+        if (CommonUtils.isEmpty(line)) {
+            return null;
+        }
         line = line.replaceAll("：", ":")
                 .replaceAll("，", ",")
                 .replaceAll("\n", "")
                 .replaceAll("\t", "")
                 .trim();
-        String[] array = line.split(",");
-        if (array.length != allowTableHeadStr.split(",").length) {
+        String split1 = ",";
+        String split2 = ":";
+        String[] array = line.split(split1);
+        if (array.length != allowTableHeadStr.split(split1).length) {
             return null;
         }
         StringBuilder keyStr = new StringBuilder();
         StringBuilder valueStr = new StringBuilder();
-        int index = 0;
         for (String item : array) {
-            index++;
             if (CommonUtils.isEmpty(item)) {
                 continue;
             }
             String[] itemArray = new String[2];
-            if (index == 1) {
-                // yyyy-MM-dd HH:mm:ss:SSS 时间格式特殊
-                int indexFirstColon = item.indexOf(":");
-                if (indexFirstColon == -1) {
-                    continue;
-                }
+            // yyyy-MM-dd HH:mm:ss:SSS 时间格式特殊
+            int indexFirstColon = item.indexOf(split2);
+            if (indexFirstColon == -1) {
+                itemArray[0] = item;
+                itemArray[1] = "";
+            } else {
                 itemArray[0] = item.substring(0, indexFirstColon);
                 itemArray[1] = item.substring(indexFirstColon + 1);
-            } else {
-                itemArray = item.split(":");
-            }
-            if (itemArray.length != 2 || CommonUtils.isEmpty(itemArray[0])) {
-                continue;
             }
             keyStr.append(",")
                     .append(itemArray[0].trim());

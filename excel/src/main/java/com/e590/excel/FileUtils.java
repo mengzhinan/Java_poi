@@ -67,18 +67,18 @@ public class FileUtils {
      *
      * @param txtFile            文件路径 + 文件名
      * @param dataList           数据集合
+     * @param allowFileSuffixStr 允许读取的文件类型扩展名
      * @param allowTableHeadStr  允许的数据列表 head 格式
-     * @param allowFileSuffixArr 允许读取的文件类型扩展名
      * @return 文件内容集合
      */
     public static void readTxt(String txtFile,
                                ArrayList<String> dataList,
-                               String allowTableHeadStr,
-                               String[] allowFileSuffixArr) {
+                               String allowFileSuffixStr,
+                               String allowTableHeadStr) {
         if (CommonUtils.isEmpty(txtFile)) {
             return;
         }
-        reRead(new File(txtFile), dataList, allowTableHeadStr, allowFileSuffixArr);
+        reRead(new File(txtFile), dataList, allowFileSuffixStr, allowTableHeadStr);
     }
 
     /**
@@ -89,13 +89,45 @@ public class FileUtils {
      */
     private static void reRead(File baseFile,
                                ArrayList<String> dataList,
-                               String allowTableHeadStr,
-                               String[] allowFileSuffixArr) {
+                               String allowFileSuffixStr,
+                               String allowTableHeadStr) {
         if (baseFile == null || !baseFile.exists()) {
             return;
         }
         if (baseFile.isFile()) {
-            readContent(baseFile, dataList, allowTableHeadStr, allowFileSuffixArr);
+            // 获取文件后缀名
+            String fileSuffix = getFileSuffixWithoutDot(baseFile);
+            if (CommonUtils.isEmpty(fileSuffix)) {
+                return;
+            }
+            boolean isAllow = false;
+            String[] allowSuffixArr = allowFileSuffixStr.split(",");
+            for (String allowFileSuffix : allowSuffixArr) {
+                if (allowFileSuffix.equalsIgnoreCase(fileSuffix)) {
+                    isAllow = true;
+                    break;
+                }
+            }
+            if (!isAllow) {
+                return;
+            }
+            ArrayList<String> tempList = null;
+            try {
+                tempList = readText(baseFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (tempList == null || tempList.size() == 0) {
+                return;
+            }
+            for (int i = 0; i < tempList.size(); i++) {
+                String line = ParseDataUtils.convertLine(tempList.get(i), allowTableHeadStr);
+                if (CommonUtils.isEmpty(line)) {
+                    continue;
+                }
+                dataList.add(line);
+            }
+
         }
         if (baseFile.isDirectory()) {
             File[] list = baseFile.listFiles();
@@ -103,71 +135,47 @@ public class FileUtils {
                 return;
             }
             for (File file : list) {
-                reRead(file, dataList, allowTableHeadStr, allowFileSuffixArr);
+                reRead(file, dataList, allowFileSuffixStr, allowTableHeadStr);
             }
         }
     }
 
-    private static void readContent(File file,
-                                    ArrayList<String> dataList,
-                                    String allowTableHeadStr,
-                                    String[] allowFileSuffixArr) {
+    /**
+     * 读取文本文件
+     *
+     * @param file 文件路径 + 扩展名
+     * @return 数据集合
+     */
+    public static ArrayList<String> readText(File file)
+            throws IOException {
         if (file == null || !file.exists()) {
-            return;
-        }
-        // 获取文件后缀名
-        String fileSuffix = getFileSuffixWithoutDot(file);
-        if (CommonUtils.isEmpty(fileSuffix)) {
-            return;
-        }
-        boolean isAllow = false;
-        for (String allowFileSuffix : allowFileSuffixArr) {
-            if (allowFileSuffix.equalsIgnoreCase(fileSuffix)) {
-                isAllow = true;
-                break;
-            }
-        }
-        if (!isAllow) {
-            return;
+            return null;
         }
         FileInputStream fis = null;
         InputStreamReader isr = null;
         BufferedReader br = null;
         try {
+            ArrayList<String> list = new ArrayList<>();
             fis = new FileInputStream(file);
             isr = new InputStreamReader(fis);
             br = new BufferedReader(isr);
             String line = null;
+            // != null，表示未读到文件末尾
             while ((line = br.readLine()) != null) {
-                line = ParseDataUtils.convertLine(line, allowTableHeadStr);
-                if (!CommonUtils.isEmpty(line)) {
-                    dataList.add(line);
+                if (CommonUtils.isEmpty(line)) {
+                    // 读到空字符串，忽略
+                    continue;
                 }
+                list.add(line);
             }
+            return list;
         } catch (IOException e) {
             e.printStackTrace();
+            throw new IOException(e);
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (isr != null) {
-                try {
-                    isr.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            CloseIOUtils.closeIO(br);
+            CloseIOUtils.closeIO(isr);
+            CloseIOUtils.closeIO(fis);
         }
     }
 
@@ -177,9 +185,10 @@ public class FileUtils {
      * @param filePath 文件路径 + 扩展名
      * @param dataList 数据集合
      */
-    public static void writeFile(String filePath, ArrayList<String> dataList) {
+    public static void writeText(String filePath, ArrayList<String> dataList)
+            throws IOException, IllegalArgumentException {
         if (CommonUtils.isEmpty(filePath)) {
-            throw new IllegalArgumentException("File path to be write is null or empty exception.");
+            throw new IllegalArgumentException(filePath + " to be write is null or empty exception.");
         }
         if (dataList == null || dataList.size() == 0) {
             throw new IllegalArgumentException("data list will be write is empty exception.");
@@ -198,46 +207,13 @@ public class FileUtils {
                 bw.write(dataList.get(i));
                 bw.newLine();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new IOException(e);
         } finally {
-            if (bw != null) {
-                try {
-                    bw.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (osw != null) {
-                try {
-                    osw.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    osw.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (fos != null) {
-                try {
-                    fos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            CloseIOUtils.closeIO(bw);
+            CloseIOUtils.closeIO(osw);
+            CloseIOUtils.closeIO(fos);
         }
 
     }

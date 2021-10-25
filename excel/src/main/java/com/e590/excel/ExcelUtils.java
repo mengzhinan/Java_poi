@@ -20,52 +20,49 @@ public class ExcelUtils {
     /**
      * 写入 Excel 文件
      *
-     * @param excelFile         excel 文件路径 + 文件名
-     * @param sheetName         sheet 表名
-     * @param dataSet           二维结构的数据集合
-     * @param allowTableHeadStr 允许的列表头部格式字符串
+     * @param excelFile excel 文件路径 + 文件名
+     * @param sheetName sheet 表名
+     * @param dataSet   二维结构的数据集合
      */
     public static void writeExcel(String excelFile,
                                   String sheetName,
-                                  ArrayList<String> dataSet,
-                                  String allowTableHeadStr)
+                                  ArrayList<String> dataSet)
             throws IOException, IllegalArgumentException {
+        boolean isXlsFileExists = FileUtils.createFileIfNotExists(excelFile);
+        if (!isXlsFileExists) {
+            throw new IllegalArgumentException("writeExcel(): " + excelFile + " not exists Exception.");
+        }
+        if (dataSet == null || dataSet.size() == 0) {
+            throw new IllegalArgumentException("writeExcel(): dateSet is null or empty Exception.");
+        }
         if (CommonUtils.isEmpty(sheetName)) {
             sheetName = "sheet1";
         }
-        boolean isXlsFileExists = FileUtils.createFileIfNotExists(excelFile);
-        if (!isXlsFileExists) {
-            throw new IllegalArgumentException(excelFile + " not exists Exception.");
-        }
-        if (dataSet == null || dataSet.size() == 0) {
-            throw new IllegalArgumentException("dateSet is null or empty Exception.");
-        }
-        dataSet.add(0, allowTableHeadStr);
         FileOutputStream fos = null;
         Workbook workbook = null;
         try {
             fos = new FileOutputStream(excelFile);
-            //1.创建workbook
+            // 1.创建workbook
             workbook = new HSSFWorkbook();
-            //2.根据workbook创建sheet
+            // 2.根据workbook创建sheet
             Sheet sheet = workbook.createSheet(sheetName);
 
-            //3.根据sheet创建row
-            //循环行
+            // 3.根据sheet创建row
+            // 循环行
             int dateSetSize = dataSet.size();
-            for (int line = 0; line < dateSetSize; line++) {
-                Row row1 = sheet.createRow(line);
+            for (int lineIndex = 0; lineIndex < dateSetSize; lineIndex++) {
                 // 循环列
-                String columnText = dataSet.get(line);
+                Row row = sheet.createRow(lineIndex);
+                String columnText = dataSet.get(lineIndex);
                 if (CommonUtils.isEmpty(columnText)) {
-                    continue;
+                    columnText = "";
                 }
                 String[] columnArray = columnText.split(",");
                 int columnListSize = columnArray.length;
                 for (int cellIndex = 0; cellIndex < columnListSize; cellIndex++) {
-                    //4.根据row创建cell
-                    Cell cell = row1.createCell(cellIndex);
-                    //5.向cell里面设置值
+                    // 4.根据row创建cell
+                    Cell cell = row.createCell(cellIndex);
+                    // 5.向cell里面设置值
                     String cellText = columnArray[cellIndex];
                     if (CommonUtils.isEmpty(cellText)) {
                         cellText = "";
@@ -74,31 +71,15 @@ public class ExcelUtils {
                 }
             }
 
-            //6.通过输出流写到文件里去
+            // 6.通过输出流写到文件里去
             workbook.write(fos);
+
         } catch (IOException e) {
             e.printStackTrace();
             throw new IOException(e);
         } finally {
-            if (workbook != null) {
-                try {
-                    workbook.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (fos != null) {
-                try {
-                    fos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            CloseIOUtils.closeIO(workbook);
+            CloseIOUtils.closeIO(fos);
         }
     }
 
