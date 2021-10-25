@@ -7,8 +7,8 @@ set Current_Path=%~dp0
 :: (选填，默认值 >Example) 参数4：是否是相同的表头格式。
 :: Example: "记录时间,是否扫描,可用空间,垃圾,微信,QQ,钉钉,企业微信,应用清理,图片清理,视频清理,音频清理,安装包,大文件,重复文件";
 :: Demo1，当前 bat 批处理的执行目录；默认生成 xls 文件；默认只读取 txt 文件；默认 Example 表头
-:: java -Dfile.encoding=utf-8 -jar excel_tool.jar %Current_Path%
+java -Dfile.encoding=utf-8 -jar excel_tool.jar %Current_Path%
 
 :: Demo2，当前 bat 批处理的执行目录；默认生成 txt 文件；默认只读取 txt 文件；默认 Example 表头
-java -Dfile.encoding=utf-8 -jar excel_tool.jar %Current_Path% txt
+:: java -Dfile.encoding=utf-8 -jar excel_tool.jar %Current_Path% txt
 pause
